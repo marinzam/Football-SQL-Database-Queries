@@ -1,0 +1,56 @@
+CREATE TABLE EventTypes (
+	id int NOT NULL AUTO_INCREMENT,
+	event_type varchar(10),
+
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE Teams (
+	id int NOT NULL AUTO_INCREMENT,
+	team_name varchar(25),
+
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE Players (
+   id int NOT NULL AUTO_INCREMENT,
+   first_name varchar(25),
+   last_name varchar(25),
+   team_id int,
+
+   PRIMARY KEY(id),
+   FOREIGN KEY (team_id) REFERENCES Teams(id)
+ );
+
+ CREATE TABLE Games (
+ 	id int NOT NULL AUTO_INCREMENT,
+ 	home_id int,
+ 	away_id int,
+ 	game_date  date,
+
+ 	pts_home int DEFAULT 0,
+ 	pts_away int DEFAULT 0,
+ 	winner_id int,
+	loser_id int,
+
+ 	PRIMARY KEY (id),
+    FOREIGN KEY (home_id) REFERENCES Teams(id),
+ 	FOREIGN KEY (away_id) REFERENCES Teams(id),
+    FOREIGN KEY (winner_id) REFERENCES Teams(id),
+	FOREIGN KEY (loser_id) REFERENCES Teams(id)
+ );
+
+ CREATE TABLE Stats (
+ 	game_id int NOT NULL AUTO_INCREMENT,
+ 	player_id int NOT NULL,
+ 	team_id int,
+ 	event_id int,
+ 	points int,
+ 	qb_id int,
+
+ 	FOREIGN KEY (game_id) REFERENCES Games(id),
+ 	FOREIGN KEY (player_id) REFERENCES Players(id),
+    FOREIGN KEY (team_id) REFERENCES Teams(id),
+    FOREIGN KEY (event_id) REFERENCES EventTypes(id),
+ 	FOREIGN KEY (qb_id) REFERENCES Players(id)
+ );

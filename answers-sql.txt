@@ -1,0 +1,80 @@
+cd project/courses/comp426-f17/public_html/users/marinzam/a3
+
+There are 12 teams @398
+There are 48 players @425
+There are 505 games @412
+There are 6002 scoring events @422
+
+1) How many touchdowns did Cam Newton score or pass for when playing against Atlanta?
+1) 34
+
+SELECT COUNT(*)
+FROM Players, Stats, EventTypes, Games, Teams
+WHERE (
+    (Players.first_name ='Cam' AND Players.last_name ='Newton')
+    AND (Players.id = Stats.player_id OR Players.id = Stats.qb_id)
+    AND (Stats.event_id = EventTypes.id )
+    AND (Games.id = Stats.game_id AND (Games.home_id = Teams.id OR Games.away_id = Teams.id) AND Teams.team_name = 'Atlanta')
+)
+
+2) How rushing touchdowns has Marshawn Lynch scored in October?
+2) 49
+
+SELECT COUNT(*)
+FROM Players, Games, Stats, EventTypes
+WHERE (MONTH(Games.game_date) = '10'AND Games.id = Stats.game_id)
+    AND (Stats.event_id = EventTypes.id AND (EventTypes.event_type = 'rushing'))
+    AND (Stats.player_id = Players.id
+         AND (Players.first_name = 'Marshawn' AND Players.last_name = 'Lynch'))
+
+
+3) Which players scored more points in 2016 than in 2015?
+3)  These players (not necessarily in this order since that wasn't part of what was asked for):
+Julio	Jones
+Devonta	Freeman
+Cody	Parkey
+Deshone	Kizer
+Isaiah	Crowell
+Blair	Walsh
+Doug	Baldwin
+Thomas	Rawls
+Sebastian	Janikowski
+Jordy	Nelson
+Ty	Montgomery
+Marshawn	Lynch
+Graham	Gano
+Jonathan	Stewart
+Jarvis	Landry
+Connor	Barth
+Deonte	Thompson
+Tom	Savage
+Dez	Bryant
+DeAndre	Hopkins
+Josh	Doctson
+
+4) Who won the game between Dallas and Washington on Thanksgiving Day 2016?
+4) Dallas
+
+SELECT Teams.team_name
+FROM Teams,(SELECT Games.winner_id
+      FROM Teams, Games
+      WHERE (Games.game_date = '2016-11-24')
+      AND ((Games.home_id = Teams.id)
+         AND (Teams.team_name = 'Washington' OR Teams.team_name = 'Dallas'))
+      )AS Winner
+WHERE Winner.winner_id = Teams.id
+
+5) List all the games (date and opposing team) that Dallas won in 2016 in chronological order
+2016-09-25	Miami
+2016-10-16	NewEngland
+2016-11-20	Washington
+2016-11-24	Washington
+
+SELECT DISTINCT Loser.game_date, Teams.team_name
+FROM Teams, Games,(SELECT Games.loser_id, Games.game_date
+      FROM Teams, Games
+      WHERE (YEAR(Games.game_date) = '2016')
+      AND ((Games.winner_id = Teams.id)
+         AND (Teams.team_name = 'Dallas'))
+      )AS Loser
+WHERE Loser.loser_id = Teams.id
